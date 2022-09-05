@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
+import dataHandler from "./datahandler"
 
 export default function Input({setData}) {
     const [data, setdata] = useState(null)
@@ -15,9 +16,12 @@ export default function Input({setData}) {
         }
         reader.readAsDataURL(acceptedFiles[0])
         const data = reader.result
-        setdata(data)
-        console.log(acceptedFiles[0])
+        setData(acceptedFiles[0], data)
     }, [])
+    const onUpload = async() => {
+        const cid = await dataHandler.write(data)
+        // setData(name, cid)
+    }
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: onDrop,
     })

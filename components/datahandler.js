@@ -60,6 +60,5 @@ class DataHandler {
     }
 }
 const dataHandler = new DataHandler()
-dataHandler
 
 export default dataHandler

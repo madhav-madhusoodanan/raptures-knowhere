@@ -42,6 +42,11 @@ export default function Folder() {
         setDummy(Date.now())
         // console.log(root)
     }
+    const setData = (name, value) => {
+        setPath([...path, name])
+        setRoot(AssignAfterTraverse(root, path, value.substring(1, 10)))
+        setDummy(Date.now())
+    }
     return (
         // < className="h-full w-full rounded grid place-items-center">
         <div className="h-5/6 w-5/6 mx-auto my-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 place-self-center">
@@ -59,7 +64,7 @@ export default function Folder() {
                 </div>
             )}
             <CreateFolder currentRoot={currentRoot} setCurrentRoot={editTree} />
-            <Input />
+            <Input setData={setData} />
             {Object.keys(currentRoot).map((key, index) => (
                 <Element
                     currentRoot={currentRoot}

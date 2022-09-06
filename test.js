@@ -6,7 +6,6 @@ function Traverse(root, path) {
 }
 function AssignAfterTraverse(root, path, newSubTree) {
     let tree = newSubTree
-
     while (path.length > 0) {
         let changedElem = path.pop()
         let parentTree = Traverse(root, path)
@@ -23,6 +22,6 @@ const tree = {
                 } 
         },
 }
-const path = [1, 2, 3, "mem"]
+const path = [1, 2, 3, "mem1"]
 const newSubtree = "mem"
 console.log(JSON.stringify(AssignAfterTraverse(tree, path, newSubtree)))

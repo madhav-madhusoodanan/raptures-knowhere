@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import dataHandler from "./datahandler"
+import { AssignAfterTraverse, Traverse } from "./utils"
 
 export default function Input({setData}) {
     const [data, setdata] = useState(null)
@@ -10,18 +11,14 @@ export default function Input({setData}) {
         reader.onabort = () => console.log("file reading was aborted")
         reader.onerror = () => console.log("file reading has failed")
         reader.onload = () => {
-            // Do whatever you want with the file contents
-            const binaryStr = reader.result
-            console.log(binaryStr)
+            const data = reader.result
+            dataHandler.write(data).then(cid => {
+                setData(acceptedFiles[0].name, cid)
+            })
         }
         reader.readAsDataURL(acceptedFiles[0])
-        const data = reader.result
-        setData(acceptedFiles[0], data)
     }, [])
-    const onUpload = async() => {
-        const cid = await dataHandler.write(data)
-        // setData(name, cid)
-    }
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: onDrop,
     })
@@ -37,7 +34,7 @@ export default function Input({setData}) {
     )
 }
 
-export function CreateFolder({ currentRoot, setCurrentRoot }) {
+export function CreateFolder({ currentRoot, setCurrentRoot, path }) {
     const [name, setName] = useState("")
     const onCreate = () => {
         if (currentRoot[name]) {
@@ -46,6 +43,7 @@ export function CreateFolder({ currentRoot, setCurrentRoot }) {
         }
         currentRoot[name] = {}
         setCurrentRoot(currentRoot)
+        setName("")
     }
     return (
         <div className="flex flex-col w-full align-middle justify-start gap-4 h-40 border-dashed border-2 border-gray-500 p-2 rounded">

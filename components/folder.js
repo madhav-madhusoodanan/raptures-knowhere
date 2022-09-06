@@ -1,26 +1,10 @@
 // import { useEffect, useState } from "react"
 
 import { useState, useEffect } from "react"
+import instance from "./axios"
 import Input, { CreateFolder } from "./input"
+import { AssignAfterTraverse, Traverse } from "./utils"
 
-function Traverse(root, path) {
-    // console.log(path)
-    return path.reduce((newRoot, key) => {
-        return newRoot[key]
-    }, root)
-}
-function AssignAfterTraverse(root, path, newSubTree) {
-    let tree = newSubTree
-    const tempPath = path
-
-    while (tempPath.length > 0) {
-        let changedElem = tempPath.pop()
-        let parentTree = Traverse(root, tempPath)
-        parentTree = { ...parentTree, [changedElem]: tree }
-        tree = parentTree
-    }
-    return tree
-}
 
 export default function Folder() {
     const [dummy, setDummy] = useState(0)
@@ -28,23 +12,20 @@ export default function Folder() {
         1: { 4: { 2: "3" }, 2: { 3: { lmao: "ded" } } },
     })
     const [path, setPath] = useState([])
-    const [currentRoot, setCurrentRoot] = useState(root)
-    useEffect(() => {
-        setCurrentRoot(Traverse(root, path))
-    }, [path])
-
-    useEffect(() => {
-        console.log("remded")
-    }, [dummy])
 
     const editTree = (currentRoot) => {
-        setRoot(AssignAfterTraverse(root, path, currentRoot))
+        const rootLocal = AssignAfterTraverse(root, path, currentRoot)
+        setRoot(rootLocal)
         setDummy(Date.now())
-        // console.log(root)
     }
     const setData = (name, value) => {
-        setPath([...path, name])
-        setRoot(AssignAfterTraverse(root, path, value.substring(1, 10)))
+        console.log(root)
+        const pathLocal = [...path, name]
+
+        const rootLocal = AssignAfterTraverse(root, pathLocal, value)
+        console.log(rootLocal)
+        setRoot(rootLocal)
+
         setDummy(Date.now())
     }
     return (
@@ -63,11 +44,11 @@ export default function Folder() {
                     <p className="w-1/2 font-bold text-center">Back</p>
                 </div>
             )}
-            <CreateFolder currentRoot={currentRoot} setCurrentRoot={editTree} />
+            <CreateFolder currentRoot={Traverse(root, path)} setCurrentRoot={editTree} />
             <Input setData={setData} />
-            {Object.keys(currentRoot).map((key, index) => (
+            {Object.keys(Traverse(root, path)).map((key, index) => (
                 <Element
-                    currentRoot={currentRoot}
+                    currentRoot={Traverse(root, path)}
                     rootElem={key}
                     key={index}
                     setPath={setPath}
@@ -79,7 +60,11 @@ export default function Folder() {
 }
 
 function Element({ currentRoot, rootElem, setPath, path }) {
-    console.log(currentRoot)
+    const [data, setData] = useState("")
+    const onClick = async () => {
+        const response = await instance.get(currentRoot[rootElem])
+        setData(response.data)
+    }
     if (typeof currentRoot[rootElem] === "object") {
         return (
             <div
@@ -90,19 +75,33 @@ function Element({ currentRoot, rootElem, setPath, path }) {
             </div>
         )
     } else if (typeof currentRoot[rootElem] === "string") {
-        return (
-            <a href={``}>
+        if (data == "")
+            return (
                 <div
-                    onClick={() => setPath([...path, rootElem])}
                     className="h-40 w-full rounded grid place-items-center bg-neutral-300 text-black cursor-pointer"
+                    onClick={onClick}
                 >
                     <p className="w-1/2 font-bold text-center">{rootElem}</p>
                 </div>
-            </a>
-        )
+            )
+        else
+            return (
+                <a href={data} target="_blank" rel="noopener noreferrer">
+                    <div className="h-40 w-full rounded grid place-items-center bg-green-300 text-black cursor-pointer">
+                        <p className="w-1/2 font-bold text-center">
+                            {rootElem}
+                        </p>
+                    </div>
+                </a>
+            )
     }
 }
 
+/* onClick={() => {
+        dataHandler.read(currentRoot[rootElem]).then(data => {
+            window.open(data, "_blank")
+        })
+    }} */
 /* const [project, setProject] = useState({
     name: "lightning network project",
     img: "",

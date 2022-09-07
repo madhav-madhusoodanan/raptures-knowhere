@@ -22,6 +22,6 @@ const tree = {
                 } 
         },
 }
-const path = [1, 2, 3, "mem1"]
+const path = ["mem1"]
 const newSubtree = "mem"
 console.log(JSON.stringify(AssignAfterTraverse(tree, path, newSubtree)))

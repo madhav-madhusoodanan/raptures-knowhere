@@ -6,34 +6,18 @@ import { AssignAfterTraverse, Traverse } from "./utils"
 export default function Folder() {
     const [dummy, setDummy] = useState(0)
     const [path, setPath] = useState([])
-    useEffect(() => {
-        localStorage.setItem(
-            "raptures-drive-root",
-            JSON.stringify({
-                1: { 4: { 2: "3" }, 2: { 3: { lmao: "ded" } } },
-            })
-        )
-    }, [])
+    const [root, setRoot] = useState({
+        1: { 4: { 2: "3" }, 2: { 3: { lmao: "ded" } } },
+    })
 
     const editTree = (currentRoot) => {
-        const root = localStorage.getItem("raptures-drive-root")
-        const rootLocal = AssignAfterTraverse(
-            JSON.parse(root),
-            path,
-            currentRoot
-        )
-        localStorage.setItem("raptures-drive-root", JSON.stringify(rootLocal))
+        setRoot((root) => AssignAfterTraverse(root, path, currentRoot))
         setDummy(Date.now())
     }
     const setData = (name, value) => {
-        const root = localStorage.getItem("raptures-drive-root")
+        console.log(name, value)
         const pathLocal = [...path, name]
-        const rootLocal = AssignAfterTraverse(
-            JSON.parse(root),
-            pathLocal,
-            value
-        )
-        localStorage.setItem("raptures-drive-root", JSON.stringify(rootLocal))
+        setRoot((root) => AssignAfterTraverse(root, pathLocal, value))
         setDummy(Date.now())
     }
     return (
@@ -53,24 +37,13 @@ export default function Folder() {
                 </div>
             )}
             <CreateFolder
-                currentRoot={Traverse(
-                    JSON.parse(localStorage.getItem("raptures-drive-root")),
-                    path
-                )}
+                currentRoot={Traverse(root, path)}
                 setCurrentRoot={editTree}
             />
             <Input setData={setData} />
-            {Object.keys(
-                Traverse(
-                    JSON.parse(localStorage.getItem("raptures-drive-root")),
-                    path
-                )
-            ).map((key, index) => (
+            {Object.keys(Traverse(root, path)).map((key, index) => (
                 <Element
-                    currentRoot={Traverse(
-                        JSON.parse(localStorage.getItem("raptures-drive-root")),
-                        path
-                    )}
+                    currentRoot={Traverse(root, path)}
                     rootElem={key}
                     key={index}
                     setPath={setPath}

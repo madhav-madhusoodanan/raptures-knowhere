@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import instance from "./axios"
+import dataHandler from "./datahandler"
+import Executor from "./execution"
 import Input, { CreateFolder } from "./input"
 import { AssignAfterTraverse, Traverse } from "./utils"
 
@@ -10,15 +12,24 @@ export default function Folder() {
         1: { 4: { 2: "3" }, 2: { 3: { lmao: "ded" } } },
     })
 
+
+    const updateProfile = async () => {
+        const executor = new Executor()
+        const cid = await dataHandler.write(JSON.stringify(root))
+        await executor.putProfile(cid)
+        alert("profile updated!")
+    }
     const editTree = (currentRoot) => {
         setRoot((root) => AssignAfterTraverse(root, path, currentRoot))
         setDummy(Date.now())
+        updateProfile().then()
     }
     const setData = (name, value) => {
         console.log(name, value)
         const pathLocal = [...path, name]
         setRoot((root) => AssignAfterTraverse(root, pathLocal, value))
         setDummy(Date.now())
+        updateProfile().then()
     }
     return (
         // < className="h-full w-full rounded grid place-items-center">

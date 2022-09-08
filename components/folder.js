@@ -22,14 +22,14 @@ export default function Folder() {
     const editTree = (currentRoot) => {
         setRoot((root) => AssignAfterTraverse(root, path, currentRoot))
         setDummy(Date.now())
-        updateProfile().then()
+        // updateProfile().then()
     }
     const setData = (name, value) => {
         console.log(name, value)
         const pathLocal = [...path, name]
         setRoot((root) => AssignAfterTraverse(root, pathLocal, value))
         setDummy(Date.now())
-        updateProfile().then()
+        // updateProfile().then()
     }
     return (
         // < className="h-full w-full rounded grid place-items-center">

@@ -1,3 +1,4 @@
+import {ethers} from "ethers"
 export const KNOWHERE = ""
 export const provider = ethers.getDefaultProvider("http://localhost:8545")
 export function Traverse(root, path) {

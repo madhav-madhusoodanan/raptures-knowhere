@@ -8,6 +8,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { AssignAfterTraverse, Traverse } from "./utils";
 
 export default function Folder() {
+  const [create1, setCreate1] = useState(false);
   const [orgAddress, setOrgAddress] = useState("Not Connected");
   const [myAddress, setMyAddress] = useState("Not Connected");
   const [create, setCreate] = useState(false);
@@ -40,6 +41,7 @@ export default function Folder() {
     // < className="h-full w-full rounded grid place-items-center">
     <div>
       <ModalFolder />
+      <Orglist />
       <div className="bg-[#D9D9D933] w-full flex justify-between drop-shadow-2xl">
         <div>
           <div className="flex">
@@ -71,7 +73,13 @@ export default function Folder() {
         </div>
         <div className="flex mr-24">
           <div className=" py-12 mr-6">
-            <div className="bg-[#BAF2FF] rounded-3xl text-3xl py-4 px-6">
+            <div
+              className="bg-[#BAF2FF] rounded-3xl text-3xl py-4 px-6 hover:cursor-pointer"
+              onClick={() => {
+                setCreate1(true);
+                console.log(create1);
+              }}
+            >
               {orgAddress}
             </div>
           </div>
@@ -104,7 +112,7 @@ function ModalFolder({ create }) {
   if (create == true) {
     return (
       <div className="bg-[#D1D1D1] w-1/5 rounded-xl relative z-10 top-96 mx-auto">
-        <div>
+        <div onClick={() => {}}>
           <AiOutlineClose fontSize={40} />
         </div>
         <div className="flex items-center m-4 pt-2 border-2 border-black rounded-lg">
@@ -124,8 +132,8 @@ function ModalFolder({ create }) {
     );
   }
 }
-function Orglist({ orgAddress }) {
-  if (create == true) {
+function Orglist({ orgAddress, create1 }) {
+  if (create1 == true) {
     return (
       <div className="bg-[#D1D1D1] w-1/5 rounded-xl relative z-10 top-96 mx-auto">
         <div className="text-md">{orgAddress}</div>

@@ -1,64 +1,65 @@
-import { useState, useCallback } from "react"
-import { useDropzone } from "react-dropzone"
-import dataHandler from "./datahandler"
-import { AssignAfterTraverse, Traverse } from "./utils"
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import dataHandler from "./datahandler";
+import { AssignAfterTraverse, Traverse } from "./utils";
+import { AiOutlineFolderAdd } from "react-icons/ai";
+import { BsUpload } from "react-icons/bs";
 
-export default function Input({setData}) {
-    const [data, setdata] = useState(null)
-    const onDrop = useCallback((acceptedFiles) => {
-        const reader = new FileReader()
+export default function Input({ setData }) {
+  const [data, setdata] = useState(null);
 
-        reader.onabort = () => console.log("file reading was aborted")
-        reader.onerror = () => console.log("file reading has failed")
-        reader.onload = () => {
-            const data = reader.result
-            dataHandler.write(data).then(cid => {
-                setData(acceptedFiles[0].name, cid)
-            })
-        }
-        reader.readAsDataURL(acceptedFiles[0])
-    }, [])
+  const onDrop = useCallback((acceptedFiles) => {
+    const reader = new FileReader();
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop: onDrop,
-    })
-    return (
-        <div {...getRootProps()} className="border-dashed border-2 border-gray-500 h-40 rounded grid place-items-center p-4">
-            <input {...getInputProps()} />
-            {isDragActive ? (
-                <p className="text-center">Drop the files here ...</p>
-            ) : (
-                <p className="text-center">Drag & drop a file here, or just click...</p>
-            )}
-        </div>
-    )
+    reader.onabort = () => console.log("file reading was aborted");
+    reader.onerror = () => console.log("file reading has failed");
+    reader.onload = () => {
+      const data = reader.result;
+      dataHandler.write(data).then((cid) => {
+        setData(acceptedFiles[0].name, cid);
+      });
+    };
+    reader.readAsDataURL(acceptedFiles[0]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: onDrop,
+  });
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      {isDragActive ? (
+        <p className="text-center cursor-pointer">Drop the files here ...</p>
+      ) : (
+        <p className="px-12 my-6 text-4xl rounded-3xl py-8 flex bg-[#BAF2FF] text-black cursor-pointer w-max hover:bg-[#5AD4EF]">
+          <BsUpload fontSize={40} />
+          <div className="pl-2">Upload</div>
+        </p>
+      )}
+    </div>
+  );
 }
 
 export function CreateFolder({ currentRoot, setCurrentRoot, path }) {
-    const [name, setName] = useState("")
-    const onCreate = () => {
-        if (currentRoot[name]) {
-            alert("folder already exists!")
-            return
-        }
-        currentRoot[name] = {}
-        setCurrentRoot(currentRoot)
-        setName("")
+  const [name, setName] = useState("");
+  const onCreate = () => {
+    if (currentRoot[name]) {
+      alert("folder already exists!");
+      return;
     }
-    return (
-        <div className="flex flex-col w-full align-middle justify-start gap-4 h-40 border-dashed border-2 border-gray-500 p-2 rounded">
-            <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="New folder name"
-                className="px-4 py-2 rounded bg-slate-400 placeholder-white w-full"
-            />
-            <div
-                onClick={onCreate}
-                className="px-4 py-2 rounded bg-blue-500 text-white font-bold cursor-pointer w-max mx-auto"
-            >
-                Create
-            </div>
-        </div>
-    )
+    currentRoot[name] = {};
+    setCurrentRoot(currentRoot);
+    setName("");
+  };
+  return (
+    <div className="py-6">
+      <div
+        onClick={onCreate}
+        className="px-12 text-4xl py-8 rounded-3xl flex bg-[#BAF2FF] text-black cursor-pointer w-max mx-32 hover:bg-[#5AD4EF]"
+      >
+        <AiOutlineFolderAdd fontSize={40} />
+        <div className="pl-2">Create Folder</div>
+      </div>
+    </div>
+  );
 }

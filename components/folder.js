@@ -3,11 +3,14 @@ import instance from "./axios";
 import dataHandler from "./datahandler";
 import Executor from "./execution";
 import Input, { CreateFolder } from "./input";
+import { AiFillFolder } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";
 import { AssignAfterTraverse, Traverse } from "./utils";
 
 export default function Folder() {
   const [orgAddress, setOrgAddress] = useState("Not Connected");
   const [myAddress, setMyAddress] = useState("Not Connected");
+  const [create, setCreate] = useState(false);
   const [dummy, setDummy] = useState(0);
   const [path, setPath] = useState([]);
   const [root, setRoot] = useState({
@@ -16,6 +19,7 @@ export default function Folder() {
 
   const updateProfile = async () => {
     const executor = new Executor();
+
     const cid = await dataHandler.write(JSON.stringify(root));
     await executor.putProfile(cid);
     alert("profile updated!");
@@ -34,8 +38,9 @@ export default function Folder() {
   };
   return (
     // < className="h-full w-full rounded grid place-items-center">
-    <div className=" drop-shadow-2xl">
-      <div className="bg-[#D9D9D933] w-full flex justify-between pt-12">
+    <div>
+      <ModalFolder />
+      <div className="bg-[#D9D9D933] w-full flex justify-between drop-shadow-2xl">
         <div>
           <div className="flex">
             {path.length !== 0 && (
@@ -52,10 +57,14 @@ export default function Folder() {
             <CreateFolder
               currentRoot={Traverse(root, path)}
               setCurrentRoot={editTree}
+              onClick={() => {
+                setCreate(true);
+              }}
             />
 
             <Input setData={setData} />
           </div>
+
           <div className="bg-[#D9D9D94D] ml-32 text-3xl rounded-lg pl-4 mb-8 mt-12 py-4">
             Home &gt;
           </div>
@@ -73,22 +82,58 @@ export default function Folder() {
           </div>
         </div>
       </div>
-      <div className="text-4xl font-semibold underline text-center py-20">
-        Folders
-      </div>
-      {Object.keys(Traverse(root, path)).map((key, index) => (
-        <Element
-          currentRoot={Traverse(root, path)}
-          rootElem={key}
-          key={index}
-          setPath={setPath}
-          path={path}
-        />
-      ))}
+
+      {Object.keys(Traverse(root, path))
+        .filter((key) => {
+          typeof Traverse(root, path)[key] === "object";
+        })
+        .map((key, index) => (
+          <Element
+            currentRoot={Traverse(root, path)}
+            rootElem={key}
+            key={index}
+            setPath={setPath}
+            path={path}
+          />
+        ))}
     </div>
   );
 }
 
+function ModalFolder({ create }) {
+  if (create == true) {
+    return (
+      <div className="bg-[#D1D1D1] w-1/5 rounded-xl relative z-10 top-96 mx-auto">
+        <div>
+          <AiOutlineClose fontSize={40} />
+        </div>
+        <div className="flex items-center m-4 pt-2 border-2 border-black rounded-lg">
+          <AiFillFolder fontSize={40} />{" "}
+          <input
+            type="name"
+            className=" bg-[#D1D1D1] w-full text-xl xl:text-3xl md:text-2xl text-center py-2 shadow-inner text-black placeholder-black"
+            onChange={({ target: { value } }) => setName(value)}
+            id="name"
+            name="name"
+            placeholder="Enter Folder Name"
+            autocomplete="off"
+          />
+        </div>
+        <div className="text-3xl text-center cursor-pointer py-2">Create</div>
+      </div>
+    );
+  }
+}
+function Orglist({ orgAddress }) {
+  if (create == true) {
+    return (
+      <div className="bg-[#D1D1D1] w-1/5 rounded-xl relative z-10 top-96 mx-auto">
+        <div className="text-md">{orgAddress}</div>
+        <div>{orgAddress}</div>
+      </div>
+    );
+  }
+}
 function Element({ currentRoot, rootElem, setPath, path }) {
   const [data, setData] = useState("");
   const onClick = async () => {
@@ -96,6 +141,7 @@ function Element({ currentRoot, rootElem, setPath, path }) {
     setData(response.data);
   };
   if (typeof currentRoot[rootElem] === "object") {
+    //Folder
     return (
       <div
         onClick={() => setPath([...path, rootElem])}
@@ -105,13 +151,19 @@ function Element({ currentRoot, rootElem, setPath, path }) {
       </div>
     );
   } else if (typeof currentRoot[rootElem] === "string") {
+    //Files
     if (data == "")
       return (
-        <div
-          className="h-40 w-full rounded grid place-items-center bg-neutral-300 text-black cursor-pointer"
-          onClick={onClick}
-        >
-          <p className="w-1/2 font-bold text-center">{rootElem}</p>
+        <div>
+          <div className="text-4xl font-semibold underline text-center py-20">
+            Files
+          </div>
+          <div
+            className="h-40 w-full rounded grid place-items-center bg-neutral-300 text-black cursor-pointer"
+            onClick={onClick}
+          >
+            <p className="w-1/2 font-bold text-center">{rootElem}</p>
+          </div>
         </div>
       );
     else
